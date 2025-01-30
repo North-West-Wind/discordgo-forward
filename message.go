@@ -45,6 +45,50 @@ const (
 	MessageTypeContextMenuCommand                    MessageType = 23
 )
 
+// Partial Message consisting of a subset of Message fields
+type PartialMessage struct {
+	// The type of the message.
+	Type MessageType `json:"type"`
+
+	// The content of the message.
+	Content string `json:"content"`
+
+	// A list of embeds present in the message.
+	Embeds []*MessageEmbed `json:"embeds"`
+
+	// A list of attachments present in the message.
+	Attachments []*MessageAttachment `json:"attachments"`
+
+	// The time at which the messsage was sent.
+	// CAUTION: this field may be removed in a
+	// future API version; it is safer to calculate
+	// the creation time via the ID.
+	Timestamp time.Time `json:"timestamp"`
+
+	// The time at which the last edit of the message
+	// occurred, if it has been edited.
+	EditedTimestamp *time.Time `json:"edited_timestamp"`
+
+	// The flags of the message, which describe extra features of a message.
+	// This is a combination of bit masks; the presence of a certain permission can
+	// be checked by performing a bitwise AND between this int and the flag.
+	Flags MessageFlags `json:"flags"`
+
+	// A list of users mentioned in the message.
+	Mentions []*User `json:"mentions"`
+
+	// The roles mentioned in the message.
+	MentionRoles []string `json:"mention_roles"`
+
+	// Currently missing "stickers"
+
+	// An array of StickerItem objects, representing sent stickers, if there were any.
+	StickerItems []*StickerItem `json:"sticker_items"`
+
+	// A list of components attached to the message.
+	Components []MessageComponent `json:"components"`
+}
+
 // A Message stores all data related to a specific Discord message.
 type Message struct {
 	// The ID of the message.
@@ -129,6 +173,10 @@ type Message struct {
 	// This does not contain the reference *to* this message; this is for when *this* message references another.
 	// To generate a reference to this message, use (*Message).Reference().
 	MessageReference *MessageReference `json:"message_reference"`
+
+	// The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
+	// NOTE: This field is only returned when MessageReference has Type 1 (FORWARD).
+	MessageSnapshots *[]MessageSnapshot `json:"message_snapshots"`
 
 	// The message associated with the message_reference
 	// NOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE).
@@ -552,6 +600,10 @@ func (m *Message) SoftReference() *MessageReference {
 // Forward returns a MessageReference for a forwarded message.
 func (m *Message) Forward() *MessageReference {
 	return m.reference(MessageReferenceTypeForward, true)
+}
+
+type MessageSnapshot struct {
+	Message *PartialMessage `json:"message"`
 }
 
 // ContentWithMentionsReplaced will replace all @<id> mentions with the
