@@ -176,7 +176,7 @@ type Message struct {
 
 	// The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
 	// NOTE: This field is only returned when MessageReference has Type 1 (FORWARD).
-	MessageSnapshots *[]MessageSnapshot `json:"message_snapshots"`
+	MessageSnapshots []*MessageSnapshot `json:"message_snapshots"`
 
 	// The message associated with the message_reference
 	// NOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE).
