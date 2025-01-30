@@ -91,6 +91,8 @@ type PartialMessage struct {
 
 // A Message stores all data related to a specific Discord message.
 type Message struct {
+	*PartialMessage
+
 	// The ID of the message.
 	ID string `json:"id"`
 
